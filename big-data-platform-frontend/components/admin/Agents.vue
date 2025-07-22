@@ -263,11 +263,9 @@ const handleFormError = (message) => {
 }
 
 const confirmDeleteAgent = (agentId) => {
-  $ui.confirm({
-    title: '确认删除代理',
-    content: '您确定要删除这个代理账户吗？此操作不可撤销。',
-    onConfirm: () => handleDeleteAgent(agentId)
-  })
+  if (window.confirm('您确定要删除这个代理账户吗？此操作不可撤销。')) {
+    handleDeleteAgent(agentId)
+  }
 }
 
 const handleDeleteAgent = async (agentId) => {
