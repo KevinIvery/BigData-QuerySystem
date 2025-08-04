@@ -260,7 +260,7 @@ const pagination = ref({
   current_page: 1,
   total_pages: 1,
   total_items: 0,
-  page_size: 20,
+  page_size: 10,
   has_next: false,
   has_previous: false
 })
@@ -314,13 +314,13 @@ const fetchOrders = async (page = 1) => {
     loading.value = true
     
     const response = await api.get('/agent/orders/', {
-      params: {
+
         page,
         page_size: pagination.value.page_size,
         search: searchForm.value.search,
         date_range: searchForm.value.date_range,
         status: searchForm.value.status
-      }
+      
     })
     
     if (response.code === 0) {

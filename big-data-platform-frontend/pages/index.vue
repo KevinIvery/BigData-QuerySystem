@@ -158,6 +158,20 @@ const openCustomerService = () => {
 // 启动数据获取和认证流程
 onMounted(async () => {
   console.log('【Index】--- 页面挂载，开始初始化流程 ---');
+  
+
+  // 监听支付状态（支付宝环境）
+  if (process.client && typeof ap !== 'undefined') {
+    // 监听来自支付窗口的消息
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'payment_started') {
+        console.log('【Index】收到支付开始消息:', event.data)
+        // 开始轮询支付状态
+        startPaymentStatusPolling(event.data.order_no)
+      }
+    })
+  }
+  
   isLoading.value = true;
   try {
     // 4. 先获取站点数据
@@ -169,6 +183,8 @@ onMounted(async () => {
 
       // 5. 然后用获取到的配置启动认证流程
       console.log('【Index】2. 调用initAuth启动认证...');
+      console.log('【Index】siteData.value.system_config:', siteData.value.system_config);
+      console.log('【Index】alipay_appid:', siteData.value.system_config?.alipay_appid);
       await initAuth(siteData.value.system_config);
     } else {
       console.error('【Index】❌ 获取站点数据失败:', response.message);
@@ -191,6 +207,68 @@ onMounted(async () => {
     }, 2000);
   }
 });
+
+// 支付状态轮询
+let paymentPollingTimer = null
+
+// 全局支付状态检查函数
+const checkPaymentStatus = async (orderNo) => {
+  try {
+    console.log('【Index】检查支付状态:', orderNo)
+    const response = await api.get(`/frontend/query-result/${orderNo}/`)
+    
+    if (response.code === 0) {
+      const orderData = response.data
+      
+      // 如果支付成功，跳转到结果页
+      if (orderData.status === 'paid' || orderData.status === 'querying' || orderData.status === 'completed') {
+        console.log('【Index】支付成功，跳转到结果页')
+        stopPaymentStatusPolling()
+        
+        // 跳转到结果页
+        router.push(`/query-result/${orderNo}`)
+        return true
+      }
+    }
+    return false
+  } catch (error) {
+    console.error('【Index】检查支付状态失败:', error)
+    return false
+  }
+}
+
+const startPaymentStatusPolling = (orderNo) => {
+  console.log('【Index】开始轮询支付状态:', orderNo)
+  
+  // 清除之前的轮询
+  if (paymentPollingTimer) {
+    clearInterval(paymentPollingTimer)
+  }
+  
+  // 开始轮询
+  paymentPollingTimer = setInterval(async () => {
+    await checkPaymentStatus(orderNo)
+  }, 3000) // 每3秒检查一次
+  
+  // 10分钟后停止轮询
+  setTimeout(() => {
+    if (paymentPollingTimer) {
+      console.log('【Index】支付状态轮询超时，停止轮询')
+      stopPaymentStatusPolling()
+    }
+  }, 10 * 60 * 1000)
+}
+
+const stopPaymentStatusPolling = () => {
+  if (paymentPollingTimer) {
+    clearInterval(paymentPollingTimer)
+    paymentPollingTimer = null
+  }
+}
+
+// 暴露给子组件使用
+provide('checkPaymentStatus', checkPaymentStatus)
+provide('startPaymentStatusPolling', startPaymentStatusPolling)
 
 // 监听登录状态变化
 watch(loginState, (newState) => {

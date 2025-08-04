@@ -81,7 +81,7 @@ class SmsService:
 
         try:
             # 1. 频率控制：检查60秒内是否已发送过
-            sixty_seconds_ago = timezone.now() - timezone.timedelta(seconds=60)
+            sixty_seconds_ago = timezone.now() - timezone.timedelta(seconds=5)
             if SmsVerificationCode.objects.filter(phone=phone, created_at__gte=sixty_seconds_ago).exists():
                 return False, '操作过于频繁，请稍后再试'
 

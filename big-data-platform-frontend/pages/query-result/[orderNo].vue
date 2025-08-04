@@ -16,6 +16,8 @@
     </div>
     <!-- 主内容 -->
     <main class="max-w-2xl mx-auto  py-6">
+
+      
       <!-- 加载状态 -->
       <div v-if="isLoading" class="text-center py-12">
         <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -400,7 +402,6 @@ const startPolling = () => {
       const response = await api.get(`/frontend/query-result/${orderNo}/`)
       
       if (response.code === 0) {
-        const previousStatus = orderData.value?.status
         orderData.value = response.data
         
         // 如果查询完成或失败，停止轮询

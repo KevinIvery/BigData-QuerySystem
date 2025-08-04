@@ -326,7 +326,7 @@ const orders = ref([])
 const loading = ref(false)
 const refunding = ref(false)
 const currentPage = ref(1)
-const pageSize = ref(20)
+const pageSize = ref(10)
 const total = ref(0)
 const totalPages = ref(0)
 
@@ -379,7 +379,7 @@ const getOrders = async () => {
       ...filters.value
     }
 
-    const response = await api.get('/admin/orders/', { params })
+    const response = await api.get('/admin/orders/',  params )
     
     if (response.code === 0) {
       orders.value = response.data.items || []

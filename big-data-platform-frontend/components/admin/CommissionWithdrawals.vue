@@ -494,7 +494,7 @@ const pagination = ref({
   total_items: 0,
   total_pages: 0,
   current_page: 1,
-  page_size: 20,
+  page_size: 10,
   has_next: false,
   has_previous: false
 })
@@ -505,7 +505,7 @@ const filters = reactive({
   status: '',
   date_range: 'all',
   page: 1,
-  page_size: 20
+  page_size: 10
 })
 
 // 弹窗状态
@@ -537,7 +537,7 @@ const loadWithdrawals = async (page = 1) => {
       date_range: filters.date_range
     }
 
-    const response = await api.get('/admin/commission-withdrawals/', { params })
+    const response = await api.get('/admin/commission-withdrawals/',  params )
     
     if (response.code === 0) {
       withdrawals.value = response.data.items

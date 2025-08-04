@@ -147,11 +147,36 @@ def get_site_data(request: HttpRequest):
         except Exception as e:
             print(f"[站点数据] 获取微信AppID时发生错误: {str(e)}")
 
+        # 新增：获取支付宝AppID
+        alipay_appid = None
+        try:
+            # 查找类型为'alipay_payment'的有效配置（复用支付配置）
+            alipay_config = ExternalApiConfig.objects.filter(
+                owner_id=owner_id, 
+                owner_type=owner_type, 
+                config_type='alipay_payment', 
+                is_active=True
+            ).first()
+            
+            if alipay_config:
+                credentials = alipay_config.credentials
+                # credentials字段可能是JSON字符串或已解析的字典
+                if isinstance(credentials, str):
+                    credentials = json.loads(credentials)
+                
+                if isinstance(credentials, dict):
+                    alipay_appid = credentials.get('app_id')
+                    print(f"[站点数据] 成功获取到支付宝AppID: {alipay_appid}")
+
+        except Exception as e:
+            print(f"[站点数据] 获取支付宝AppID时发生错误: {str(e)}")
+
 
         system_data = {
             "site_title": system_config.site_title,
             "logo": system_config.logo,
             "appid": wechat_appid,
+            "alipay_appid": alipay_appid,
             "keywords": system_config.keywords,
             "description": system_config.description,
             "show_query_price": system_config.show_query_price,
@@ -504,6 +529,205 @@ def wechat_oauth_login(request: HttpRequest):
         return ApiResponse.error(message="服务器内部错误")
 
 
+@csrf_exempt
+@require_http_methods(["POST"])
+def debug_alipay_detected(request: HttpRequest):
+    """调试接口：前端检测到支付宝环境"""
+    try:
+        data = json.loads(request.body)
+        user_agent = data.get('userAgent', '')
+        url = data.get('url', '')
+        timestamp = data.get('timestamp', '')
+        
+        print(f"[调试] 前端检测到支付宝环境:")
+        print(f"  UserAgent: {user_agent}")
+        print(f"  URL: {url}")
+        print(f"  时间: {timestamp}")
+        
+        return JsonResponse({'success': True, 'message': '调试信息已记录'})
+    except Exception as e:
+        print(f"[调试] 处理调试信息失败: {str(e)}")
+        return JsonResponse({'success': False, 'message': '调试信息处理失败'})
+
+
+
+        
+@csrf_exempt
+@require_http_methods(["POST"])
+def alipay_oauth_login(request: HttpRequest):
+    """支付宝静默授权登录 - 使用open_id，跳过签名验证"""
+    print(f"[支付宝登录] ========== 开始处理支付宝登录请求 ==========")
+    
+    try:
+        # 1. 解析请求数据
+        data = json.loads(request.body)
+        auth_code = data.get('auth_code')
+        print(f"[支付宝登录] 接收到的auth_code: {auth_code}")
+        
+        if not auth_code:
+            print(f"[支付宝登录] ❌ 缺少支付宝授权码")
+            return ApiResponse.param_error(message="缺少支付宝授权码")
+
+        # 2. 获取代理标识
+        agent_tag = request.COOKIES.get('agent_tag', None)
+        agent = None
+        agent_id = None
+        
+        print(f"[支付宝登录] 代理标签: {agent_tag}")
+        
+        # 如果有代理标识，验证代理是否存在
+        if agent_tag:
+            try:
+                agent = AgentUser.objects.get(domain_suffix=agent_tag)
+                agent_id = agent.id
+                print(f"[支付宝登录] ✅ 找到代理: {agent.username} (ID: {agent.id})")
+            except AgentUser.DoesNotExist:
+                print(f"[支付宝登录] ❌ 代理标签 '{agent_tag}' 无效")
+                agent = None
+
+        # 3. 从数据库获取支付宝支付配置
+        print(f"[支付宝登录] 开始获取支付宝配置...")
+        alipay_config_db = ExternalApiConfig.objects.filter(
+            config_type='alipay_payment', is_active=True
+        ).first()
+        
+        if not alipay_config_db or not alipay_config_db.credentials:
+            print(f"[支付宝登录] ❌ 支付宝配置未找到")
+            return ApiResponse.error(message="支付宝配置未找到", code=ResponseCode.SERVER_ERROR)
+        
+        print(f"[支付宝登录] ✅ 找到支付宝配置")
+        
+        credentials = alipay_config_db.credentials
+        if isinstance(credentials, str):
+            credentials = json.loads(credentials)
+        
+        app_id = credentials.get('app_id')
+        app_private_key = credentials.get('app_private_key')
+        alipay_public_key = credentials.get('alipay_public_key')
+
+        if not all([app_id, app_private_key, alipay_public_key]):
+            print(f"[支付宝登录] ❌ 支付宝配置不完整")
+            return ApiResponse.error(message="支付宝配置不完整", code=ResponseCode.SERVER_ERROR)
+
+        print(f"[支付宝登录] ✅ 支付宝配置完整，AppID: {app_id}")
+
+        # 4. 用auth_code换取access_token和open_id
+        print(f"[支付宝登录] 开始调用支付宝API...")
+        try:
+            from .alipay_tools import AlipayUtils
+            # 创建支付宝工具类实例
+            alipay_utils = AlipayUtils(app_id, app_private_key, alipay_public_key)
+            
+            # 使用auth_code换取access_token和open_id
+            oauth_response = alipay_utils.oauth_token(auth_code)
+            
+            # 检查响应结果 - 优先使用open_id
+            open_id = oauth_response.get('open_id')
+            user_id = oauth_response.get('user_id')  # 兼容旧版本
+            access_token = oauth_response.get('access_token')
+            
+            if not open_id and not user_id:
+                error_msg = oauth_response.get('sub_msg') or oauth_response.get('msg') or '支付宝授权失败'
+                print(f"[支付宝登录] ❌ 授权失败: {error_msg}")
+                return ApiResponse.error(message=error_msg, code=ResponseCode.UNAUTHORIZED)
+            
+            # 优先使用open_id，如果没有则使用user_id
+            final_user_id = open_id or user_id
+            print(f"[支付宝登录] ✅ 获取到open_id: {open_id}")
+            print(f"[支付宝登录] ✅ 获取到user_id: {user_id}")
+            print(f"[支付宝登录] ✅ 最终使用ID: {final_user_id}")
+            print(f"[支付宝登录] ✅ 获取到access_token: {access_token[:20]}...")
+            
+            # 5. 可选：获取用户详细信息
+            try:
+                print(f"[支付宝登录] 开始获取用户详细信息...")
+                user_detail = alipay_utils.user_info_share(access_token)
+                print(f"[支付宝登录] ✅ 获取到用户详细信息: {user_detail}")
+                
+            except Exception as e:
+                print(f"[支付宝登录] ⚠️ 获取用户详细信息失败: {str(e)}")
+                # 不影响登录流程，继续执行
+            
+        except Exception as e:
+            print(f"[支付宝登录] ❌ 调用支付宝API失败: {str(e)}")
+            return ApiResponse.error(message="支付宝授权验证失败", code=ResponseCode.SERVER_ERROR)
+
+        # 6. 查找或创建用户 - 使用open_id作为唯一标识
+        print(f"[支付宝登录] 开始处理用户数据...")
+        user, created = RegularUser.objects.get_or_create(
+            alipay_user_id=final_user_id,  # 使用open_id
+            defaults={
+                'username': RegularUser.generate_unique_username(),
+                'agent_id': agent_id  # 关联代理ID
+            }
+        )
+        
+        if created:
+            print(f"[支付宝登录] ✅ 创建新用户: {user.username}")
+        else:
+            print(f"[支付宝登录] ✅ 找到现有用户: {user.username}")
+        
+        # 如果用户已存在但没有关联代理，且当前有代理标识，则更新关联
+        if not created and agent_id and not user.agent_id:
+            user.agent_id = agent_id
+            user.save()
+            print(f"[支付宝登录] ✅ 用户 {user.username} 已关联到代理 {agent.username}")
+        
+        if user.is_deactivated:
+            print(f"[支付宝登录] ❌ 用户账户已注销")
+            return ApiResponse.forbidden(message="该账户已注销")
+            
+        # 7. 设置session
+        print(f"[支付宝登录] 设置用户session...")
+        request.session['user_info'] = {'user_id': user.id, 'user_type': 'regular'}
+        
+        # 8. 返回前端需要的数据结构
+        print(f"[支付宝登录] 构建返回数据...")
+        user_info = model_to_dict(user, fields=['id', 'username', 'phone', 'alipay_user_id', 'agent_id'])
+        
+        # 添加代理信息到返回数据
+        if user.agent_id:
+            try:
+                user_agent = AgentUser.objects.get(id=user.agent_id)
+                user_info['agent_info'] = {
+                    'agent_id': user_agent.id,
+                    'agent_username': user_agent.username,
+                    'domain_suffix': user_agent.domain_suffix
+                }
+                print(f"[支付宝登录] ✅ 添加代理信息: {user_agent.username}")
+            except AgentUser.DoesNotExist:
+                user_info['agent_info'] = None
+                print(f"[支付宝登录] ⚠️ 代理信息获取失败")
+        else:
+            user_info['agent_info'] = None
+            print(f"[支付宝登录] 用户无代理信息")
+        
+        login_message = "支付宝登录成功"
+        if created:
+            login_message = "支付宝注册并登录成功"
+            if agent:
+                login_message += f"，已关联到代理 {agent.username}"
+        
+        print(f"[支付宝登录] ✅ 登录成功，返回消息: {login_message}")
+        
+        # 遵循前端期望的格式
+        response_data = {
+            'success': True,
+            'message': login_message,
+            'token': access_token,  # 将支付宝的access_token透传
+            'userInfo': user_info
+        }
+        
+        print(f"[支付宝登录] 最终返回数据: {response_data}")
+        print(f"[支付宝登录] ========== 支付宝登录处理完成 ==========")
+        
+        return JsonResponse(response_data)
+
+    except Exception as e:
+        print(f"[支付宝登录] ❌ 支付宝登录异常: {str(e)}")
+        print(f"[支付宝登录] ========== 支付宝登录处理失败 ==========")
+        return ApiResponse.error(message="服务器内部错误")
+        
 @csrf_exempt
 @require_http_methods(["POST"])
 @login_required(user_types=['regular'])
@@ -1603,4 +1827,4 @@ def check_agency_application_status(request: HttpRequest):
     except Exception as e:
         print(f"[代理申请状态] 检查代理申请状态异常: {str(e)}")
         return ApiResponse.error(message="检查申请状态失败")
-
+  

@@ -216,7 +216,7 @@ const pagination = ref({
   current_page: 1,
   total_pages: 0,
   total_items: 0,
-  page_size: 20,
+  page_size: 10,
   has_next: false,
   has_previous: false
 })
@@ -287,7 +287,7 @@ const getQueryRecords = async () => {
         current_page: 1,
         total_pages: 0,
         total_items: 0,
-        page_size: 20,
+        page_size: 10,
         has_next: false,
         has_previous: false
       }

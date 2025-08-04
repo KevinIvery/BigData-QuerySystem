@@ -18,43 +18,31 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# 尝试多种方式导入加密模块
-try:
-    # 尝试从pycryptodome导入
-    from Crypto.Cipher import AES
-    from Crypto.Util.Padding import pad, unpad
-    from Crypto.Random import get_random_bytes
-except ImportError:
-    try:
-        # 尝试从pycryptodomex导入
-        from Cryptodome.Cipher import AES
-        from Cryptodome.Util.Padding import pad, unpad
-        from Cryptodome.Random import get_random_bytes
-    except ImportError:
-        # 如果都失败，使用自定义填充函数
-        from Crypto.Cipher import AES
-        from Crypto.Random import get_random_bytes
-        
-        def pad(data_to_pad, block_size):
-            """
-            使用PKCS#7填充数据
-            """
-            padding_len = block_size - (len(data_to_pad) % block_size)
-            padding = bytes([padding_len]) * padding_len
-            return data_to_pad + padding
-            
-        def unpad(padded_data, block_size):
-            """
-            移除PKCS#7填充
-            """
-            padding_len = padded_data[-1]
-            if padding_len > block_size:
-                raise ValueError("填充长度无效")
-            if padding_len == 0:
-                raise ValueError("填充长度不能为0")
-            if not all(x == padding_len for x in padded_data[-padding_len:]):
-                raise ValueError("填充数据无效")
-            return padded_data[:-padding_len]
+
+from Cryptodome.Cipher import AES
+from Cryptodome.Util.Padding import pad, unpad
+from Cryptodome.Random import get_random_bytes
+
+def pad(data_to_pad, block_size):
+    """
+    使用PKCS#7填充数据
+    """
+    padding_len = block_size - (len(data_to_pad) % block_size)
+    padding = bytes([padding_len]) * padding_len
+    return data_to_pad + padding
+    
+def unpad(padded_data, block_size):
+    """
+    移除PKCS#7填充
+    """
+    padding_len = padded_data[-1]
+    if padding_len > block_size:
+        raise ValueError("填充长度无效")
+    if padding_len == 0:
+        raise ValueError("填充长度不能为0")
+    if not all(x == padding_len for x in padded_data[-padding_len:]):
+        raise ValueError("填充数据无效")
+    return padded_data[:-padding_len]
 
 class TianyuanApiClient:
     """天远API客户端"""
@@ -182,7 +170,6 @@ class TianyuanApiClient:
                 'data': None,
                 'match': False
             }
-    
     def verify_three_factor(self, name, id_card, mobile):
         """
         三要素验证（姓名+身份证+手机号）

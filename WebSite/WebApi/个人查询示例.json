@@ -1109,6 +1109,244 @@
                 "flag_applyloanstr": "1"
             },
             "call_time": "2025-07-14T16:31:44.253389+00:00"
+        },
+        {
+            "api_name": "个人综合涉诉",
+            "api_code": "FLXGCA3D",
+            "success": true,
+            "message": "个人综合涉诉查询完成",
+            "data": {
+                "data": {
+                    "data": {
+                        "lawsuit_person_info": {
+                            "msg": "查询成功有结果",
+                            "code": "9100",
+                            "data": [
+                                {
+                                    "sx": {
+                                        "sxbzxr_current": []
+                                    },
+                                    "detail": {
+                                        "preservation": {},
+                                        "crc": "3063378349",
+                                        "cases_tree": {
+                                            "criminal": [
+                                                {
+                                                    "next": {
+                                                        "next": {
+                                                            "stage_type": 5,
+                                                            "n_ajbs": "2292af520e4752ff06da552964b4bab6",
+                                                            "case_type": 1000,
+                                                            "c_ah": "（2023）模拟0105执1660号"
+                                                        },
+                                                        "stage_type": 2,
+                                                        "n_ajbs": "c3b429732a839deb0f14b3d5cf2349e3",
+                                                        "case_type": 200,
+                                                        "c_ah": "（2023）模拟01刑终225号"
+                                                    },
+                                                    "stage_type": 1,
+                                                    "n_ajbs": "8121b1740d444af41bd948af67dda894",
+                                                    "case_type": 200,
+                                                    "c_ah": "（2022）模拟0105刑初630号"
+                                                }
+                                            ]
+                                        },
+                                        "administrative": {},
+                                        "civil": {},
+                                        "implement": {
+                                            "cases": [
+                                                {
+                                                    "d_jarq": "2023-07-20",
+                                                    "n_jaay": "罚金",
+                                                    "n_ssdw": "被执行人",
+                                                    "n_sjdwje": 50000,
+                                                    "c_ah": "（2023）模拟0105执1660号",
+                                                    "n_wzxje": 0,
+                                                    "c_ssdy": "模拟市模拟区",
+                                                    "n_jabdje": 50000,
+                                                    "n_jafs": "执行完毕",
+                                                    "n_ajbs": "2292af520e4752ff06da552964b4bab6",
+                                                    "n_jbfy_cj": "基层法院",
+                                                    "c_id": "18e187eb0ee90a14c34012f98a700770",
+                                                    "n_sqzxbdje": 50000,
+                                                    "n_crc": 1723025896,
+                                                    "c_ah_ys": "（2023）模拟01刑终225号:c3b429732a839deb0f14b3d5cf2349e3",
+                                                    "n_ajlx": "首次执行",
+                                                    "n_ajjzjd": "已结案",
+                                                    "c_dsrxx": [
+                                                        {
+                                                            "n_ssdw": "被执行人",
+                                                            "c_mc": "张*明",
+                                                            "n_dsrlx": "自然人"
+                                                        }
+                                                    ],
+                                                    "n_laay": "罚金",
+                                                    "n_jbfy": "模拟市模拟区人民法院",
+                                                    "d_larq": "2023-05-26"
+                                                }
+                                            ],
+                                            "count": {
+                                                "money_jie_total": 6,
+                                                "count_total": 1,
+                                                "larq_stat": "2023(1)",
+                                                "money_wei_percent": 0,
+                                                "area_stat": "模拟市模拟区(1)",
+                                                "money_jie_beigao": 6,
+                                                "count_jie_total": 1,
+                                                "money_jie_other": 0,
+                                                "count_wei_total": 0,
+                                                "count_jie_beigao": 1,
+                                                "money_yuangao": 0,
+                                                "money_beigao": 6,
+                                                "ay_stat": "刑事(1)",
+                                                "count_wei_other": 0,
+                                                "count_wei_beigao": 0,
+                                                "count_wei_yuangao": 0,
+                                                "money_other": 0,
+                                                "count_yuangao": 0,
+                                                "money_wei_yuangao": 0,
+                                                "money_jie_yuangao": 0,
+                                                "money_wei_beigao": 0,
+                                                "count_jie_yuangao": 0,
+                                                "count_other": 0,
+                                                "count_jie_other": 0,
+                                                "count_beigao": 1,
+                                                "money_wei_total": 0,
+                                                "money_wei_other": 0,
+                                                "money_total": 6,
+                                                "jafs_stat": "执行完毕(1)"
+                                            }
+                                        },
+                                        "criminal": {
+                                            "cases": [
+                                                {
+                                                    "n_laay_tree": "妨害社会管理秩序罪,扰乱公共秩序罪",
+                                                    "n_jaay": "妨害社会管理秩序罪",
+                                                    "n_ssdw": "被告人",
+                                                    "n_pcjg": "给予刑事处罚",
+                                                    "n_jaay_tree": "妨害社会管理秩序罪,扰乱公共秩序罪",
+                                                    "n_ccxzxje_level": 0,
+                                                    "n_ssdw_ys": "被告人",
+                                                    "n_jafs": "判决",
+                                                    "n_jbfy_cj": "基层法院",
+                                                    "c_id": "6bcad0966bdfce33bfb3fce31f523e6c",
+                                                    "n_slcx": "一审",
+                                                    "n_ajjzjd": "已结案",
+                                                    "n_jbfy": "模拟市模拟区人民法院",
+                                                    "c_gkws_id": "9a97f631d8fd455eadc8abea00361292",
+                                                    "c_ah_hx": "（2023）模拟01刑终225号:c3b429732a839deb0f14b3d5cf2349e3",
+                                                    "d_jarq": "2023-09-30",
+                                                    "c_slfsxx": "2,2023-08-07 09:00:00,本院第一审判庭,1;1,2023-07-21 09:00:00,本院第一审判庭,1",
+                                                    "n_dzzm": "妨害社会管理秩序罪",
+                                                    "n_fzje_level": 0,
+                                                    "n_bqqpcje_level": 0,
+                                                    "n_pcpcje_level": 0,
+                                                    "c_ah": "（2022）模拟0105刑初630号",
+                                                    "c_ssdy": "模拟市模拟区",
+                                                    "n_ajbs": "8121b1740d444af41bd948af67dda894",
+                                                    "n_dzzm_tree": "妨害社会管理秩序罪,扰乱公共秩序罪",
+                                                    "n_crc": "3084246773",
+                                                    "n_ajlx": "刑事一审",
+                                                    "c_dsrxx": [
+                                                        {
+                                                            "n_ssdw": "被告人",
+                                                            "c_mc": "张*明",
+                                                            "n_dsrlx": "自然人"
+                                                        }
+                                                    ],
+                                                    "n_laay": "妨害社会管理秩序罪",
+                                                    "d_larq": "2023-07-02"
+                                                },
+                                                {
+                                                    "n_laay_tree": "妨害社会管理秩序罪,扰乱公共秩序罪",
+                                                    "n_jaay": "妨害社会管理秩序罪",
+                                                    "n_ssdw": "上诉人",
+                                                    "n_pcjg": "给予刑事处罚",
+                                                    "n_jaay_tree": "妨害社会管理秩序罪,扰乱公共秩序罪",
+                                                    "c_gkws_glah": "（2022）模拟0105刑初630号",
+                                                    "n_ccxzxje_level": 0,
+                                                    "c_gkws_dsr": "原公诉机关模拟市模拟区人民检察院。上诉人(原审被告人)张*明,男,1995年3月12日出生,汉族,住址：模拟市模拟区。",
+                                                    "n_jafs": "维持",
+                                                    "n_jbfy_cj": "中级人民法院",
+                                                    "c_id": "e2e7d2a9f2046b4d239a0a96bf04be07",
+                                                    "n_slcx": "二审",
+                                                    "n_ajjzjd": "已结案",
+                                                    "n_jbfy": "模拟市中级人民法院",
+                                                    "c_gkws_id": "50b1f87efe4441b98a7dab3d0033f4ba",
+                                                    "c_ah_hx": "（2023）模拟0105执1660号:2292af520e4752ff06da552964b4bab6",
+                                                    "d_jarq": "2023-12-06",
+                                                    "c_slfsxx": "1,,,2",
+                                                    "n_dzzm": "妨害社会管理秩序罪",
+                                                    "n_fzje_level": 0,
+                                                    "n_bqqpcje_level": 0,
+                                                    "n_pcpcje_level": 0,
+                                                    "c_ah": "（2023）模拟01刑终225号",
+                                                    "c_gkws_pjjg": "驳回上诉,维持原判。本裁定为终审裁定。",
+                                                    "c_ssdy": "模拟市",
+                                                    "n_ajbs": "c3b429732a839deb0f14b3d5cf2349e3",
+                                                    "n_dzzm_tree": "妨害社会管理秩序罪,扰乱公共秩序罪",
+                                                    "n_crc": "2392583185",
+                                                    "c_ah_ys": "（2022）模拟0105刑初630号:8121b1740d444af41bd948af67dda894",
+                                                    "n_ajlx": "刑事二审",
+                                                    "c_dsrxx": [
+                                                        {
+                                                            "n_ssdw": "上诉人",
+                                                            "c_mc": "张*明",
+                                                            "n_dsrlx": "自然人"
+                                                        }
+                                                    ],
+                                                    "n_laay": "妨害社会管理秩序罪",
+                                                    "d_larq": "2023-10-16"
+                                                }
+                                            ],
+                                            "count": {
+                                                "money_jie_total": 0,
+                                                "count_total": 2,
+                                                "larq_stat": "2023(2)",
+                                                "area_stat": "模拟市模拟区(1),模拟市(1)",
+                                                "money_jie_beigao": 0,
+                                                "count_jie_total": 2,
+                                                "money_jie_other": 0,
+                                                "count_wei_total": 0,
+                                                "count_jie_beigao": 1,
+                                                "money_yuangao": 0,
+                                                "money_beigao": 0,
+                                                "ay_stat": "妨害社会管理秩序罪(2)",
+                                                "count_wei_other": 0,
+                                                "count_wei_beigao": 0,
+                                                "count_wei_yuangao": 0,
+                                                "money_other": 0,
+                                                "count_yuangao": 1,
+                                                "money_wei_yuangao": 0,
+                                                "money_jie_yuangao": 0,
+                                                "money_wei_beigao": 0,
+                                                "count_jie_yuangao": 1,
+                                                "count_other": 0,
+                                                "count_jie_other": 0,
+                                                "count_beigao": 1,
+                                                "money_wei_total": 0,
+                                                "money_wei_other": 0,
+                                                "money_total": 0,
+                                                "jafs_stat": "维持(1),判决(1)"
+                                            }
+                                        },
+                                        "bankrupt": {}
+                                    },
+                                    "id": "张*明:110101************",
+                                    "xg": {
+                                        "xgbzxr_current": []
+                                    }
+                                }
+                            ]
+                        },
+                        "query_id": "202508044781640089174212262204"
+                    },
+                    "err_msg": "请求成功",
+                    "err_code": "200"
+                },
+                "err_code": "200"
+            },
+            "call_time": "2025-08-04T09:42:12.566569+00:00"
         }
     ],
     "success_count": 3,

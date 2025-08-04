@@ -11,6 +11,7 @@ class RegularUser(models.Model):
     id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=6, unique=True, blank=True, verbose_name='用户ID')
     openid = models.CharField(max_length=100, unique=True, blank=True, null=True, verbose_name='微信OpenID')
+    alipay_user_id = models.CharField(max_length=50, unique=True, blank=True, null=True, verbose_name='支付宝用户ID')
     phone = models.CharField(max_length=11, blank=True, verbose_name='手机号')
     agent_id = models.IntegerField(null=True, blank=True, verbose_name='所属代理ID')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')

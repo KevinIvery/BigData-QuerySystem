@@ -254,11 +254,13 @@
             <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
               <button @click="changePage(pagination.current_page - 1)" :disabled="!pagination.has_previous" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                 <span class="sr-only">上一页</span>
-                <Icon name="clarity:angle-line" class="h-5 w-5 rotate-90" />
+                <Icon name="clarity:angle-line" class="h-5 w-5 -rotate-90"/>
+
               </button>
               <button @click="changePage(pagination.current_page + 1)" :disabled="!pagination.has_next" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                 <span class="sr-only">下一页</span>
-                <Icon name="clarity:angle-line" class="h-5 w-5 -rotate-90"/>
+                <Icon name="clarity:angle-line" class="h-5 w-5 rotate-90" />
+
               </button>
             </nav>
           </div>
@@ -287,7 +289,7 @@ const filters = reactive({
   agent_id: '',
   status: 'all',
   page: 1,
-  page_size: 20
+  page_size: 10
 })
 
 const dateRanges = [

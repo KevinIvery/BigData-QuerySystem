@@ -99,6 +99,8 @@ urlpatterns = [
     path('frontend/send-sms-code/', frontend_views.send_sms_code, name='send_sms_code'),
     path('frontend/login/sms/', frontend_views.login_with_sms_code, name='login_with_sms_code'),
     path('frontend/login/wechat/', frontend_views.wechat_oauth_login, name='wechat_oauth_login'),
+    path('frontend/login/alipay/', frontend_views.alipay_oauth_login, name='alipay_oauth_login'),
+    path('frontend/debug/alipay-detected/', frontend_views.debug_alipay_detected, name='debug_alipay_detected'),
     path('frontend/logout/', frontend_views.logout_view, name='logout_view'),
     path('frontend/auth-check/', frontend_views.user_auth_check, name='user_auth_check'),
     

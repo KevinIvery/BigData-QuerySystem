@@ -203,7 +203,7 @@ const authorizationLetters = ref([])
 const loading = ref(false)
 const downloading = ref(null)
 const currentPage = ref(1)
-const pageSize = ref(20)
+const pageSize = ref(10)
 const total = ref(0)
 const totalPages = ref(0)
 
@@ -243,13 +243,13 @@ const getAuthorizationLetters = async () => {
       ...filters.value
     }
 
-    const response = await api.get('/admin/authorization-letters/', { params })
+    const response = await api.get('/admin/authorization-letters/',  params )
     
     if (response.code === 0) {
       authorizationLetters.value = response.data.items || []
       total.value = response.data.pagination?.total_items || 0
       currentPage.value = response.data.pagination?.current_page || 1
-      pageSize.value = response.data.pagination?.page_size || 20
+      pageSize.value = response.data.pagination?.page_size || 10
       calculateTotalPages()
     } else {
       $ui.error('获取授权书列表失败', response.message)

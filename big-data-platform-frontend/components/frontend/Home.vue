@@ -222,6 +222,15 @@
     @cancel="cancelPayment"
   />
 
+  <!-- 支付状态弹窗 -->
+  <PaymentStatusModal
+    :is-visible="showPaymentStatusModal"
+    :order="pendingOrder"
+    :is-checking="isCheckingPayment"
+    @close="closePaymentStatusModal"
+    @check-status="handleCheckPaymentStatus"
+  />
+
   <!-- Toast 消息 -->
   <SimpleToast
     v-if="currentToast"
@@ -234,7 +243,8 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, watchEffect } from 'vue'
+import { computed, ref, onMounted, watchEffect, inject, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import QueryItemsGrid from './QueryItemsGrid.vue'
 import UserAgreement from '../agreements/UserAgreement.vue'
 import PrivacyPolicy from '../agreements/PrivacyPolicy.vue'
@@ -243,6 +253,7 @@ import DataAuthorization from '../agreements/DataAuthorization.vue'
 import EnterpriseComplianceCommitment from '../agreements/EnterpriseComplianceCommitment.vue'
 import PaymentConfirmModal from './PaymentConfirmModal.vue'
 import SimpleToast from './SimpleToast.vue'
+import PaymentStatusModal from './PaymentStatusModal.vue'
 
 const props = defineProps({
   siteData: { type: Object, required: true, default: () => ({ system_config: {}, query_configs: [] }) },
@@ -364,7 +375,92 @@ const validateConfigs = () => {
 onMounted(() => {
   // 执行配置验证
   validateConfigs()
-});
+  
+  // 检查是否有待处理的订单
+  checkPendingOrders()
+  
+  // 监听路由变化，支付完成后返回首页时重新检查
+  watch(() => route?.path, (newPath) => {
+    if (newPath === '/' || newPath === '/index') {
+      console.log('【Home】路由变化，重新检查待处理订单')
+      // 延迟检查，确保订单状态已更新
+      setTimeout(() => {
+        checkPendingOrders()
+      }, 1000)
+    }
+  }, { immediate: false })
+})
+
+// 检查待处理订单
+const checkPendingOrders = async () => {
+  try {
+    // 如果用户未登录，无法获取订单历史
+    if (!props.loginState.isLoggedIn) {
+      return
+    }
+    
+    const response = await api.get('/frontend/order-history/')
+    
+    if (response.code === 0 && response.data && response.data.length > 0) {
+      // 找到最新的订单，检查多种状态
+      const latestOrder = response.data[0] // 最新的订单
+      
+      // 检查订单状态
+      if (latestOrder.status === 'pending') {
+        // 如果是支付宝环境，显示支付状态弹窗并启动轮询
+        if (isAlipay.value) {
+          pendingOrder.value = latestOrder
+          showPaymentStatusModal.value = true
+          startPaymentStatusPolling(latestOrder.order_no)
+        } else {
+          // 非支付宝环境，直接启动轮询检查支付状态
+          startPaymentStatusPolling(latestOrder.order_no)
+        }
+      } else if (latestOrder.status === 'paid' || latestOrder.status === 'querying') {
+        // 直接跳转到结果页
+        window.location.href = `/query-result/${latestOrder.order_no}`
+      } else if (latestOrder.status === 'completed') {
+        // 直接跳转到结果页
+        window.location.href = `/query-result/${latestOrder.order_no}`
+      }
+    }
+  } catch (error) {
+    console.error('【Home】检查待处理订单失败:', error)
+  }
+}
+
+// 获取父组件提供的支付状态检查函数
+const checkPaymentStatus = inject('checkPaymentStatus')
+const startPaymentStatusPolling = inject('startPaymentStatusPolling')
+
+// 手动查询支付状态
+const handleCheckPaymentStatus = async () => {
+  if (!pendingOrder.value || isCheckingPayment.value) return
+  
+  isCheckingPayment.value = true
+  
+  try {
+    console.log('【Home】手动查询支付状态...')
+    const isPaid = await checkPaymentStatus(pendingOrder.value.order_no)
+    
+    if (isPaid) {
+      console.log('【Home】支付成功，页面将自动跳转')
+    } else {
+      showToast('订单尚未支付完成，请稍后再试', 'warning')
+    }
+  } catch (error) {
+    console.error('【Home】手动查询支付状态失败:', error)
+    showToast('查询失败，请重试', 'error')
+  } finally {
+    isCheckingPayment.value = false
+  }
+}
+
+// 关闭支付状态弹窗
+const closePaymentStatusModal = () => {
+  showPaymentStatusModal.value = false
+  pendingOrder.value = null
+}
 
 const currentIncludedApis = computed(() => {
   const config = activeQueryTab.value === 'personal' ? personalQueryConfig.value : enterpriseQueryConfig.value;
@@ -508,6 +604,7 @@ const handleEnterpriseQuery = () => {
 
 // ==================== 查询支付功能 ====================
 const api = useApi()
+const route = useRoute()
 const router = useRouter()
 const isQuerying = ref(false)
 const currentOrder = ref(null)
@@ -516,12 +613,24 @@ const showPaymentModal = ref(false)
 // Toast 相关状态 - 简化为单个Toast
 const currentToast = ref(null)
 
-// 检测是否在微信环境中
-const isWeChat = computed(() => {
-  if (process.client) {
-    return /micromessenger/i.test(navigator.userAgent)
-  }
-  return false
+// 支付状态相关
+const showPaymentStatusModal = ref(false)
+const pendingOrder = ref(null)
+const isCheckingPayment = ref(false)
+
+// 检测支付宝环境
+const isAlipay = computed(() => {
+  if (!process.client) return false
+  
+  // 检测User-Agent
+  const userAgent = navigator.userAgent.toLowerCase()
+  const isAlipayUA = /alipay|aliapp|alipayclient|alipayapp|aliapp/i.test(userAgent)
+  
+  // 检测支付宝JSAPI是否可用
+  const hasApObject = typeof ap !== 'undefined'
+  
+  // 只有在支付宝UA且ap对象存在时才认为是支付宝环境
+  return isAlipayUA && hasApObject
 })
 
 // Toast 消息提示 - 简化版本
@@ -554,8 +663,31 @@ const startQueryProcess = async (queryType, queryData) => {
     currentOrder.value = orderResult.data
     console.log('【Home】订单创建成功:', currentOrder.value)
     
-    // 2. 显示支付确认模态框
-    showPaymentModal.value = true
+    // 2. 检查是否在支付宝环境中
+    if (isAlipay.value) {
+      // 在支付宝环境中，直接跳转到payment-window
+      console.log('【Home】检测到支付宝环境，直接跳转到payment-window')
+      
+      // 构建URL参数，传递订单信息
+      const params = new URLSearchParams({
+        order_no: currentOrder.value.order_no,
+        amount: currentOrder.value.amount || '0.00',
+        query_type: currentOrder.value.query_type || '',
+        query_data: JSON.stringify(currentOrder.value.query_data || {})
+      })
+      
+      const paymentWindowUrl = `${window.location.origin}/payment-window?${params.toString()}`
+      
+      // 使用ap.pushWindow创建新窗口
+      ap.pushWindow({
+        url: paymentWindowUrl
+      })
+      
+      showToast('正在打开支付页面...', 'info')
+    } else {
+      // 在非支付宝环境中，显示支付确认模态框
+      showPaymentModal.value = true
+    }
     
   } catch (error) {
     console.error('【Home】查询流程异常:', error)
@@ -660,8 +792,32 @@ const handleAlipayPayment = async (paymentData) => {
     console.log('【Home】处理支付宝支付:', paymentData)
     
     if (paymentData.pay_url) {
-      // 跳转到支付宝支付页面
-      window.location.href = paymentData.pay_url
+      if (isAlipay.value) {
+        // 在支付宝环境中，使用ap.pushWindow创建新窗口
+        console.log('【Home】检测到支付宝环境，使用ap.pushWindow创建新窗口')
+        
+        // 构建URL参数，传递订单信息
+        const params = new URLSearchParams({
+          pay_url: paymentData.pay_url,
+          order_no: currentOrder.value.order_no,
+          amount: currentOrder.value.amount || '0.00',
+          query_type: currentOrder.value.query_type || '',
+          query_data: JSON.stringify(currentOrder.value.query_data || {})
+        })
+        
+        const paymentWindowUrl = `${window.location.origin}/payment-window?${params.toString()}`
+        
+        // 使用ap.pushWindow创建新窗口
+        ap.pushWindow({
+          url: paymentWindowUrl
+        })
+        
+        showToast('正在打开支付页面...', 'info')
+      } else {
+        // 在外部浏览器中，直接跳转
+        console.log('【Home】外部浏览器，直接跳转支付')
+        window.location.href = paymentData.pay_url
+      }
     } else {
       showToast('支付链接生成失败', 'error')
     }
@@ -764,6 +920,10 @@ watchEffect(() => {
   console.log('[Home.vue] enterpriseQueryConfig:', enterpriseQueryConfig.value)
   console.log('[Home.vue] currentIncludedApis:', currentIncludedApis.value)
 })
+
+
+
+
 </script>
 
 <style scoped>
@@ -796,4 +956,4 @@ watchEffect(() => {
 
 .animation-delay-1000 { animation-delay: 1s; }
 .animation-delay-3000 { animation-delay: 3s; }
-</style> 
+</style>

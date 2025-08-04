@@ -1,0 +1,52 @@
+INFO 2025-07-30 00:10:08,371 autoreload 92296 2864 Watching for file changes with StatReloader
+INFO 2025-07-30 00:10:47,014 autoreload 61352 47408 Watching for file changes with StatReloader
+INFO 2025-07-30 00:11:14,223 autoreload 78440 85620 Watching for file changes with StatReloader
+INFO 2025-07-30 00:15:03,906 autoreload 48664 3876 Watching for file changes with StatReloader
+INFO 2025-07-30 00:18:14,550 autoreload 67288 81364 Watching for file changes with StatReloader
+INFO 2025-07-30 00:21:16,032 autoreload 7768 31476 Watching for file changes with StatReloader
+INFO 2025-07-30 00:24:29,017 autoreload 61608 73844 Watching for file changes with StatReloader
+INFO 2025-07-30 00:25:46,109 autoreload 94640 18456 Watching for file changes with StatReloader
+INFO 2025-07-30 00:30:16,756 autoreload 57024 80120 Watching for file changes with StatReloader
+INFO 2025-07-30 00:30:34,599 autoreload 57024 80120 D:\web\django_web\支付宝版本\WebSite\WebSite\settings.py changed, reloading.
+INFO 2025-07-30 00:30:35,249 autoreload 24848 29932 Watching for file changes with StatReloader
+WARNING 2025-07-30 00:31:00,063 log 24848 17088 Not Found: /media/uploads/logos/2025/07/10/logo_1752156010_b55d82bc7d6e4612a834c8526d51ebd2.png
+WARNING 2025-07-30 00:31:08,882 log 24848 17440 Not Found: /media/uploads/logos/2025/07/10/logo_1752156010_b55d82bc7d6e4612a834c8526d51ebd2.png
+INFO 2025-07-30 00:31:52,699 autoreload 24848 29932 D:\web\django_web\支付宝版本\WebSite\WebApi\models.py changed, reloading.
+INFO 2025-07-30 00:31:53,184 autoreload 64012 64356 Watching for file changes with StatReloader
+INFO 2025-07-30 00:31:59,808 autoreload 64012 64356 D:\web\django_web\支付宝版本\WebSite\WebApi\models.py changed, reloading.
+INFO 2025-07-30 00:32:00,341 autoreload 44700 77756 Watching for file changes with StatReloader
+INFO 2025-07-30 00:33:24,420 autoreload 44700 77756 D:\web\django_web\支付宝版本\WebSite\WebApi\models.py changed, reloading.
+INFO 2025-07-30 00:33:25,034 autoreload 80760 58992 Watching for file changes with StatReloader
+INFO 2025-07-30 00:35:00,389 autoreload 80760 58992 D:\web\django_web\支付宝版本\WebSite\WebApi\models.py changed, reloading.
+INFO 2025-07-30 00:35:00,995 autoreload 88404 57068 Watching for file changes with StatReloader
+INFO 2025-07-30 00:35:11,791 autoreload 88404 57068 D:\web\django_web\支付宝版本\WebSite\WebApi\models.py changed, reloading.
+INFO 2025-07-30 00:35:12,267 autoreload 26540 96504 Watching for file changes with StatReloader
+INFO 2025-07-30 00:35:17,859 autoreload 26540 96504 D:\web\django_web\支付宝版本\WebSite\WebApi\models.py changed, reloading.
+INFO 2025-07-30 00:35:18,426 autoreload 67572 50300 Watching for file changes with StatReloader
+INFO 2025-07-30 00:35:27,153 autoreload 67572 50300 D:\web\django_web\支付宝版本\WebSite\WebApi\models.py changed, reloading.
+INFO 2025-07-30 00:35:27,796 autoreload 72184 47116 Watching for file changes with StatReloader
+INFO 2025-07-30 00:35:59,667 autoreload 72184 47116 D:\web\django_web\支付宝版本\WebSite\WebApi\models.py changed, reloading.
+INFO 2025-07-30 00:36:00,186 autoreload 98888 84864 Watching for file changes with StatReloader
+INFO 2025-07-30 00:36:01,757 autoreload 98888 84864 D:\web\django_web\支付宝版本\WebSite\WebApi\models.py changed, reloading.
+INFO 2025-07-30 00:36:02,395 autoreload 63700 76788 Watching for file changes with StatReloader
+INFO 2025-07-30 00:37:51,755 autoreload 63700 76788 D:\web\django_web\支付宝版本\WebSite\WebApi\frontend_views.py changed, reloading.
+INFO 2025-07-30 00:37:52,318 autoreload 70688 64796 Watching for file changes with StatReloader
+INFO 2025-07-30 00:38:15,230 autoreload 70688 64796 D:\web\django_web\支付宝版本\WebSite\WebApi\frontend_views.py changed, reloading.
+INFO 2025-07-30 00:38:15,882 autoreload 77200 18028 Watching for file changes with StatReloader
+INFO 2025-07-30 00:38:31,791 autoreload 77200 18028 D:\web\django_web\支付宝版本\WebSite\WebApi\urls.py changed, reloading.
+INFO 2025-07-30 00:38:32,291 autoreload 80992 84908 Watching for file changes with StatReloader
+INFO 2025-07-30 00:43:04,810 autoreload 80992 84908 D:\web\django_web\支付宝版本\WebSite\WebApi\frontend_views.py changed, reloading.
+INFO 2025-07-30 00:43:05,461 autoreload 46492 53772 Watching for file changes with StatReloader
+WARNING 2025-07-30 00:45:13,257 log 46492 90520 Not Found: /media/uploads/logos/2025/07/10/logo_1752156010_b55d82bc7d6e4612a834c8526d51ebd2.png
+INFO 2025-07-30 00:50:15,940 autoreload 46492 53772 D:\web\django_web\支付宝版本\WebSite\WebApi\frontend_views.py changed, reloading.
+INFO 2025-07-30 00:50:16,604 autoreload 60036 83876 Watching for file changes with StatReloader
+INFO 2025-07-30 00:59:54,382 autoreload 60036 83876 D:\web\django_web\支付宝版本\WebSite\WebApi\frontend_views.py changed, reloading.
+INFO 2025-07-30 00:59:54,995 autoreload 41756 84472 Watching for file changes with StatReloader
+INFO 2025-07-30 01:00:12,893 autoreload 41756 84472 D:\web\django_web\支付宝版本\WebSite\WebApi\urls.py changed, reloading.
+INFO 2025-07-30 01:00:13,445 autoreload 19664 78936 Watching for file changes with StatReloader
+INFO 2025-07-30 01:00:18,056 autoreload 19664 78936 D:\web\django_web\支付宝版本\WebSite\WebApi\urls.py changed, reloading.
+INFO 2025-07-30 01:00:18,616 autoreload 85300 88688 Watching for file changes with StatReloader
+INFO 2025-07-30 01:07:02,896 autoreload 43004 52288 Watching for file changes with StatReloader
+WARNING 2025-07-30 01:22:48,139 log 43004 85052 Not Found: /media/uploads/logos/2025/07/10/logo_1752156010_b55d82bc7d6e4612a834c8526d51ebd2.png
+WARNING 2025-07-30 01:23:54,531 log 43004 83092 Not Found: /media/uploads/logos/2025/07/10/logo_1752156010_b55d82bc7d6e4612a834c8526d51ebd2.png
+WARNING 2025-07-30 01:26:35,258 log 43004 73160 Not Found: /media/uploads/logos/2025/07/10/logo_1752156010_b55d82bc7d6e4612a834c8526d51ebd2.png

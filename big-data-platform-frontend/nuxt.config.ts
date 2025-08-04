@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   ssr: false,
   modules: ['@nuxtjs/tailwindcss', '@nuxt/image', '@nuxt/icon'],
+  debug: true,
   app: {
     head: {
       meta: [
@@ -10,6 +11,9 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/logo.ico' },
         { rel: 'apple-touch-icon', href: '/logo.ico' }
+      ],
+      script: [
+        { src: 'https://gw.alipayobjects.com/as/g/h5-lib/alipayjsapi/3.1.1/alipayjsapi.inc.min.js' },
       ]
     }
   },

@@ -1,5 +1,6 @@
 // big-data-platform-frontend/composables/useApiComponentMap.js
 import JudicialResult from '~/components/query-results/JudicialResult.vue'
+import PersonalJudicialResult from '~/components/query-results/PersonalJudicialResult.vue'
 import MarriageResult from '~/components/query-results/MarriageResult.vue'
 import LoanResult from '~/components/query-results/LoanResult.vue'
 import ReportOverview from '~/components/query-results/ReportOverview.vue'
@@ -26,6 +27,15 @@ const PERSONAL_API_CONFIG = {
     title: '司法涉诉',
     icon: 'ph:police-car-bold',
     menuId: 'judicial-result',
+    iconColor: 'text-red-600',
+    iconBg: 'bg-red-100'
+  },
+  // 个人综合涉诉
+  FLXGCA3D: {
+    component: PersonalJudicialResult,
+    title: '个人综合涉诉',
+    icon: 'ph:police-car-bold',
+    menuId: 'personal-judicial-result',
     iconColor: 'text-red-600',
     iconBg: 'bg-red-100'
   },
@@ -151,6 +161,18 @@ export const isEnterpriseApi = (apiCode) => {
 export const apiSubItemsMap = {
   // 司法涉诉细项
   FLXG0V4B: [
+    { code: 'BANKRUPT', title: '破产案件' },
+    { code: 'CIVIL', title: '民事案件' },
+    { code: 'CRIMINAL', title: '刑事案件' },
+    { code: 'ADMIN', title: '行政案件' },
+    { code: 'PRESERVATION', title: '非诉保全' },
+    { code: 'COMPENSATION', title: '赔偿案件' },
+    { code: 'JURISDICTION', title: '管辖案件' },
+    { code: 'LIMIT_HIGH', title: '限高' },
+    { code: 'LIMIT_LOW', title: '失信被执行' },
+  ],
+  // 个人综合涉诉细项（与司法涉诉保持一致）
+  FLXGCA3D: [
     { code: 'BANKRUPT', title: '破产案件' },
     { code: 'CIVIL', title: '民事案件' },
     { code: 'CRIMINAL', title: '刑事案件' },
