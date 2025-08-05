@@ -320,6 +320,499 @@
           </div>
         </div>
 
+        <!-- 民事案件 -->
+        <div v-if="activeTab === 'civil'">
+          <div v-if="getCivilCases() === 0" class="text-center py-6 text-gray-500">
+            <Icon name="ph:file-text-bold" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
+            <p class="text-sm">暂无民事案件，或未被公开</p>
+          </div>
+          <div v-else class="space-y-3">
+            <div
+              v-for="(caseItem, index) in getCivilData()"
+              :key="index"
+              class="bg-gray-50 rounded-lg p-4 space-y-3"
+            >
+              <div class="flex items-center justify-between">
+                <h5 class="text-sm font-medium text-gray-800">{{ caseItem.c_ah || '--' }}</h5>
+                <div class="flex items-center space-x-2">
+                  <span class="text-xs text-gray-500">{{ index + 1 }}/{{ getCivilCases() }}</span>
+                  <span v-if="caseItem.n_slcx" class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">{{ caseItem.n_slcx }}</span>
+                </div>
+              </div>
+              
+              <!-- 基本信息 -->
+              <div class="space-y-2">
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">立案时间：</span>
+                    <span class="text-gray-800">{{ formatDate(caseItem.d_larq) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">结案时间：</span>
+                    <span class="text-gray-800">{{ formatDate(caseItem.d_jarq) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">结案方式：</span>
+                    <span class="text-gray-800">{{ caseItem.n_jafs || '--' }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">诉讼地位：</span>
+                    <span class="text-gray-800">{{ caseItem.n_ssdw || '--' }}</span>
+                  </div>
+                </div>
+                
+                <!-- 民事案件金额信息 -->
+                <div v-if="caseItem.n_qsbdje || caseItem.n_jabdje" class="grid grid-cols-2 gap-3 text-xs bg-white p-2 rounded border">
+                  <div v-if="caseItem.n_qsbdje" class="text-center">
+                    <div class="text-gray-500">起诉标的额</div>
+                    <div class="text-blue-600 font-medium">{{ formatMoney(caseItem.n_qsbdje) }}</div>
+                  </div>
+                  <div v-if="caseItem.n_jabdje" class="text-center">
+                    <div class="text-gray-500">结案标的额</div>
+                    <div class="text-green-600 font-medium">{{ formatMoney(caseItem.n_jabdje) }}</div>
+                  </div>
+                </div>
+                
+                <div class="text-xs">
+                  <div class="flex items-start">
+                    <span class="text-gray-500 flex-shrink-0 mr-2">经办法院：</span>
+                    <span class="text-gray-800 break-all">{{ caseItem.n_jbfy || '--' }}</span>
+                  </div>
+                </div>
+                
+                <div class="text-xs">
+                  <div class="flex items-start">
+                    <span class="text-gray-500 flex-shrink-0 mr-2">立案案由：</span>
+                    <span class="text-gray-800 break-all">{{ caseItem.n_laay_tree || '--' }}</span>
+                  </div>
+                </div>
+                
+                <!-- 案件类型和阶段标识 -->
+                <div v-if="caseItem.n_ajlx || caseItem.n_ajjzjd" class="flex flex-wrap gap-2">
+                  <span v-if="caseItem.n_ajlx" class="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-full">{{ caseItem.n_ajlx }}</span>
+                  <span v-if="caseItem.n_ajjzjd" class="text-xs px-2 py-1 bg-green-100 text-green-600 rounded-full">{{ caseItem.n_ajjzjd }}</span>
+                </div>
+              </div>
+              
+              <!-- 当事人信息 -->
+              <div v-if="caseItem.c_dsrxx && caseItem.c_dsrxx.length > 0" class="text-xs">
+                <div class="text-gray-500 mb-2">当事人信息</div>
+                <div class="flex flex-wrap gap-2">
+                  <span 
+                    v-for="(person, pIndex) in caseItem.c_dsrxx" 
+                    :key="pIndex"
+                    :class="[
+                      'px-2 py-1 rounded-full text-xs',
+                      person.n_ssdw === '原告' ? 'bg-green-100 text-green-700' : 
+                      person.n_ssdw === '被告' ? 'bg-red-100 text-red-700' :
+                      person.n_ssdw === '上诉人' ? 'bg-orange-100 text-orange-700' :
+                      person.n_ssdw === '被上诉人' ? 'bg-purple-100 text-purple-700' :
+                      'bg-gray-100 text-gray-700'
+                    ]"
+                  >
+                    {{ person.n_ssdw }}: {{ person.c_mc }}
+                  </span>
+                </div>
+              </div>
+              
+              <!-- 判决结果 -->
+              <div v-if="caseItem.n_pj_victory" class="text-xs">
+                <div class="flex items-start">
+                  <span class="text-gray-500 flex-shrink-0 mr-2">判决结果：</span>
+                  <span class="text-gray-800 break-all">{{ caseItem.n_pj_victory }}</span>
+                </div>
+              </div>
+              
+              <!-- 详细信息 -->
+              <div v-if="caseItem.c_gkws_dsr" class="text-xs">
+                <div class="flex items-start">
+                  <span class="text-gray-500 flex-shrink-0 mr-2">详细信息：</span>
+                  <span class="text-gray-800 break-all leading-relaxed">{{ caseItem.c_gkws_dsr }}</span>
+                </div>
+              </div>
+              
+              <!-- 关联案件 -->
+              <div v-if="caseItem.c_ah_hx || caseItem.c_ah_ys" class="text-xs">
+                <div class="text-gray-500 mb-1">关联案件</div>
+                <div class="space-y-1">
+                  <div v-if="caseItem.c_ah_hx" class="text-gray-600">
+                    <span class="text-gray-500">后续案件：</span>{{ caseItem.c_ah_hx.split(':')[0] }}
+                  </div>
+                  <div v-if="caseItem.c_ah_ys" class="text-gray-600">
+                    <span class="text-gray-500">原审案件：</span>{{ caseItem.c_ah_ys.split(':')[0] }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 行政案件 -->
+        <div v-if="activeTab === 'administrative'">
+          <div v-if="getAdministrativeCases() === 0" class="text-center py-6 text-gray-500">
+            <Icon name="ph:file-text-bold" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
+            <p class="text-sm">暂无行政案件，或未被公开</p>
+          </div>
+          <div v-else class="space-y-3">
+            <div
+              v-for="(caseItem, index) in getAdministrativeData()"
+              :key="index"
+              class="bg-gray-50 rounded-lg p-4 space-y-3"
+            >
+              <div class="flex items-center justify-between">
+                <h5 class="text-sm font-medium text-gray-800">{{ caseItem.c_ah || '--' }}</h5>
+                <div class="flex items-center space-x-2">
+                  <span class="text-xs text-gray-500">{{ index + 1 }}/{{ getAdministrativeCases() }}</span>
+                  <span v-if="caseItem.n_slcx" class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">{{ caseItem.n_slcx }}</span>
+                </div>
+              </div>
+              
+              <!-- 基本信息 -->
+              <div class="space-y-2">
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">立案时间：</span>
+                    <span class="text-gray-800">{{ formatDate(caseItem.d_larq) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">结案时间：</span>
+                    <span class="text-gray-800">{{ formatDate(caseItem.d_jarq) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">结案方式：</span>
+                    <span class="text-gray-800">{{ caseItem.n_jafs || '--' }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">诉讼地位：</span>
+                    <span class="text-gray-800">{{ caseItem.n_ssdw || '--' }}</span>
+                  </div>
+                </div>
+                
+                <div class="text-xs">
+                  <div class="flex items-start">
+                    <span class="text-gray-500 flex-shrink-0 mr-2">经办法院：</span>
+                    <span class="text-gray-800 break-all">{{ caseItem.n_jbfy || '--' }}</span>
+                  </div>
+                </div>
+                
+                <div class="text-xs">
+                  <div class="flex items-start">
+                    <span class="text-gray-500 flex-shrink-0 mr-2">立案案由：</span>
+                    <span class="text-gray-800 break-all">{{ caseItem.n_laay_tree || '--' }}</span>
+                  </div>
+                </div>
+                
+                <!-- 案件类型和阶段标识 -->
+                <div v-if="caseItem.n_ajlx || caseItem.n_ajjzjd" class="flex flex-wrap gap-2">
+                  <span v-if="caseItem.n_ajlx" class="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-full">{{ caseItem.n_ajlx }}</span>
+                  <span v-if="caseItem.n_ajjzjd" class="text-xs px-2 py-1 bg-green-100 text-green-600 rounded-full">{{ caseItem.n_ajjzjd }}</span>
+                </div>
+              </div>
+              
+              <!-- 当事人信息 -->
+              <div v-if="caseItem.c_dsrxx && caseItem.c_dsrxx.length > 0" class="text-xs">
+                <div class="text-gray-500 mb-2">当事人信息</div>
+                <div class="flex flex-wrap gap-2">
+                  <span 
+                    v-for="(person, pIndex) in caseItem.c_dsrxx" 
+                    :key="pIndex"
+                    :class="[
+                      'px-2 py-1 rounded-full text-xs',
+                      person.n_ssdw === '原告' ? 'bg-green-100 text-green-700' : 
+                      person.n_ssdw === '被告' ? 'bg-red-100 text-red-700' :
+                      person.n_ssdw === '上诉人' ? 'bg-orange-100 text-orange-700' :
+                      person.n_ssdw === '被上诉人' ? 'bg-purple-100 text-purple-700' :
+                      'bg-gray-100 text-gray-700'
+                    ]"
+                  >
+                    {{ person.n_ssdw }}: {{ person.c_mc }}
+                  </span>
+                </div>
+              </div>
+              
+              <!-- 详细信息 -->
+              <div v-if="caseItem.c_gkws_dsr" class="text-xs">
+                <div class="flex items-start">
+                  <span class="text-gray-500 flex-shrink-0 mr-2">详细信息：</span>
+                  <span class="text-gray-800 break-all leading-relaxed">{{ caseItem.c_gkws_dsr }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 保全案件 -->
+        <div v-if="activeTab === 'preservation'">
+          <div v-if="getPreservationCases() === 0" class="text-center py-6 text-gray-500">
+            <Icon name="ph:file-text-bold" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
+            <p class="text-sm">暂无保全案件，或未被公开</p>
+          </div>
+          <div v-else class="space-y-3">
+            <div
+              v-for="(caseItem, index) in getPreservationData()"
+              :key="index"
+              class="bg-gray-50 rounded-lg p-4 space-y-3"
+            >
+              <div class="flex items-center justify-between">
+                <h5 class="text-sm font-medium text-gray-800">{{ caseItem.c_ah || '--' }}</h5>
+                <div class="flex items-center space-x-2">
+                  <span class="text-xs text-gray-500">{{ index + 1 }}/{{ getPreservationCases() }}</span>
+                </div>
+              </div>
+              
+              <!-- 基本信息 -->
+              <div class="space-y-2">
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">立案时间：</span>
+                    <span class="text-gray-800">{{ formatDate(caseItem.d_larq) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">结案时间：</span>
+                    <span class="text-gray-800">{{ formatDate(caseItem.d_jarq) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">结案方式：</span>
+                    <span class="text-gray-800">{{ caseItem.n_jafs || '--' }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">诉讼地位：</span>
+                    <span class="text-gray-800">{{ caseItem.n_ssdw || '--' }}</span>
+                  </div>
+                </div>
+                
+                <div class="text-xs">
+                  <div class="flex items-start">
+                    <span class="text-gray-500 flex-shrink-0 mr-2">经办法院：</span>
+                    <span class="text-gray-800 break-all">{{ caseItem.n_jbfy || '--' }}</span>
+                  </div>
+                </div>
+                
+                <div class="text-xs">
+                  <div class="flex items-start">
+                    <span class="text-gray-500 flex-shrink-0 mr-2">立案案由：</span>
+                    <span class="text-gray-800 break-all">{{ caseItem.n_laay_tree || '--' }}</span>
+                  </div>
+                </div>
+                
+                <!-- 案件类型和阶段标识 -->
+                <div v-if="caseItem.n_ajlx || caseItem.n_ajjzjd" class="flex flex-wrap gap-2">
+                  <span v-if="caseItem.n_ajlx" class="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-full">{{ caseItem.n_ajlx }}</span>
+                  <span v-if="caseItem.n_ajjzjd" class="text-xs px-2 py-1 bg-green-100 text-green-600 rounded-full">{{ caseItem.n_ajjzjd }}</span>
+                </div>
+              </div>
+              
+              <!-- 当事人信息 -->
+              <div v-if="caseItem.c_dsrxx && caseItem.c_dsrxx.length > 0" class="text-xs">
+                <div class="text-gray-500 mb-2">当事人信息</div>
+                <div class="flex flex-wrap gap-2">
+                  <span 
+                    v-for="(person, pIndex) in caseItem.c_dsrxx" 
+                    :key="pIndex"
+                    :class="[
+                      'px-2 py-1 rounded-full text-xs',
+                      person.n_ssdw === '申请人' ? 'bg-green-100 text-green-700' : 
+                      person.n_ssdw === '被申请人' ? 'bg-red-100 text-red-700' :
+                      'bg-gray-100 text-gray-700'
+                    ]"
+                  >
+                    {{ person.n_ssdw }}: {{ person.c_mc }}
+                  </span>
+                </div>
+              </div>
+              
+              <!-- 详细信息 -->
+              <div v-if="caseItem.c_gkws_dsr" class="text-xs">
+                <div class="flex items-start">
+                  <span class="text-gray-500 flex-shrink-0 mr-2">详细信息：</span>
+                  <span class="text-gray-800 break-all leading-relaxed">{{ caseItem.c_gkws_dsr }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 破产案件 -->
+        <div v-if="activeTab === 'bankrupt'">
+          <div v-if="getBankruptCases() === 0" class="text-center py-6 text-gray-500">
+            <Icon name="ph:file-text-bold" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
+            <p class="text-sm">暂无破产案件，或未被公开</p>
+          </div>
+          <div v-else class="space-y-3">
+            <div
+              v-for="(caseItem, index) in getBankruptData()"
+              :key="index"
+              class="bg-gray-50 rounded-lg p-4 space-y-3"
+            >
+              <div class="flex items-center justify-between">
+                <h5 class="text-sm font-medium text-gray-800">{{ caseItem.c_ah || '--' }}</h5>
+                <div class="flex items-center space-x-2">
+                  <span class="text-xs text-gray-500">{{ index + 1 }}/{{ getBankruptCases() }}</span>
+                </div>
+              </div>
+              
+              <!-- 基本信息 -->
+              <div class="space-y-2">
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">立案时间：</span>
+                    <span class="text-gray-800">{{ formatDate(caseItem.d_larq) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">结案时间：</span>
+                    <span class="text-gray-800">{{ formatDate(caseItem.d_jarq) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">结案方式：</span>
+                    <span class="text-gray-800">{{ caseItem.n_jafs || '--' }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">诉讼地位：</span>
+                    <span class="text-gray-800">{{ caseItem.n_ssdw || '--' }}</span>
+                  </div>
+                </div>
+                
+                <div class="text-xs">
+                  <div class="flex items-start">
+                    <span class="text-gray-500 flex-shrink-0 mr-2">经办法院：</span>
+                    <span class="text-gray-800 break-all">{{ caseItem.n_jbfy || '--' }}</span>
+                  </div>
+                </div>
+                
+                <div class="text-xs">
+                  <div class="flex items-start">
+                    <span class="text-gray-500 flex-shrink-0 mr-2">立案案由：</span>
+                    <span class="text-gray-800 break-all">{{ caseItem.n_laay_tree || '--' }}</span>
+                  </div>
+                </div>
+                
+                <!-- 案件类型和阶段标识 -->
+                <div v-if="caseItem.n_ajlx || caseItem.n_ajjzjd" class="flex flex-wrap gap-2">
+                  <span v-if="caseItem.n_ajlx" class="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-full">{{ caseItem.n_ajlx }}</span>
+                  <span v-if="caseItem.n_ajjzjd" class="text-xs px-2 py-1 bg-green-100 text-green-600 rounded-full">{{ caseItem.n_ajjzjd }}</span>
+                </div>
+              </div>
+              
+              <!-- 当事人信息 -->
+              <div v-if="caseItem.c_dsrxx && caseItem.c_dsrxx.length > 0" class="text-xs">
+                <div class="text-gray-500 mb-2">当事人信息</div>
+                <div class="flex flex-wrap gap-2">
+                  <span 
+                    v-for="(person, pIndex) in caseItem.c_dsrxx" 
+                    :key="pIndex"
+                    :class="[
+                      'px-2 py-1 rounded-full text-xs',
+                      person.n_ssdw === '申请人' ? 'bg-green-100 text-green-700' : 
+                      person.n_ssdw === '被申请人' ? 'bg-red-100 text-red-700' :
+                      'bg-gray-100 text-gray-700'
+                    ]"
+                  >
+                    {{ person.n_ssdw }}: {{ person.c_mc }}
+                  </span>
+                </div>
+              </div>
+              
+              <!-- 详细信息 -->
+              <div v-if="caseItem.c_gkws_dsr" class="text-xs">
+                <div class="flex items-start">
+                  <span class="text-gray-500 flex-shrink-0 mr-2">详细信息：</span>
+                  <span class="text-gray-800 break-all leading-relaxed">{{ caseItem.c_gkws_dsr }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 限制高消费 -->
+        <div v-if="activeTab === 'xgbzxr'">
+          <div v-if="getXgbzxrCases() === 0" class="text-center py-6 text-gray-500">
+            <Icon name="ph:file-text-bold" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
+            <p class="text-sm">暂无限制高消费记录，或未被公开</p>
+          </div>
+          <div v-else class="space-y-3">
+            <div
+              v-for="(caseItem, index) in getXgbzxrData()"
+              :key="index"
+              class="bg-gray-50 rounded-lg p-4 space-y-3"
+            >
+              <div class="flex items-center justify-between">
+                <h5 class="text-sm font-medium text-gray-800">{{ caseItem.c_ah || '--' }}</h5>
+                <div class="flex items-center space-x-2">
+                  <span class="text-xs text-gray-500">{{ index + 1 }}/{{ getXgbzxrCases() }}</span>
+                </div>
+              </div>
+              
+              <!-- 基本信息 -->
+              <div class="space-y-2">
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">立案时间：</span>
+                    <span class="text-gray-800">{{ formatDate(caseItem.d_larq) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">结案时间：</span>
+                    <span class="text-gray-800">{{ formatDate(caseItem.d_jarq) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">结案方式：</span>
+                    <span class="text-gray-800">{{ caseItem.n_jafs || '--' }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">诉讼地位：</span>
+                    <span class="text-gray-800">{{ caseItem.n_ssdw || '--' }}</span>
+                  </div>
+                </div>
+                
+                <div class="text-xs">
+                  <div class="flex items-start">
+                    <span class="text-gray-500 flex-shrink-0 mr-2">经办法院：</span>
+                    <span class="text-gray-800 break-all">{{ caseItem.n_jbfy || '--' }}</span>
+                  </div>
+                </div>
+                
+                <div class="text-xs">
+                  <div class="flex items-start">
+                    <span class="text-gray-500 flex-shrink-0 mr-2">立案案由：</span>
+                    <span class="text-gray-800 break-all">{{ caseItem.n_laay_tree || '--' }}</span>
+                  </div>
+                </div>
+                
+                <!-- 案件类型和阶段标识 -->
+                <div v-if="caseItem.n_ajlx || caseItem.n_ajjzjd" class="flex flex-wrap gap-2">
+                  <span v-if="caseItem.n_ajlx" class="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-full">{{ caseItem.n_ajlx }}</span>
+                  <span v-if="caseItem.n_ajjzjd" class="text-xs px-2 py-1 bg-green-100 text-green-600 rounded-full">{{ caseItem.n_ajjzjd }}</span>
+                </div>
+              </div>
+              
+              <!-- 当事人信息 -->
+              <div v-if="caseItem.c_dsrxx && caseItem.c_dsrxx.length > 0" class="text-xs">
+                <div class="text-gray-500 mb-2">当事人信息</div>
+                <div class="flex flex-wrap gap-2">
+                  <span 
+                    v-for="(person, pIndex) in caseItem.c_dsrxx" 
+                    :key="pIndex"
+                    :class="[
+                      'px-2 py-1 rounded-full text-xs',
+                      person.n_ssdw === '被执行人' ? 'bg-red-100 text-red-700' : 
+                      'bg-gray-100 text-gray-700'
+                    ]"
+                  >
+                    {{ person.n_ssdw }}: {{ person.c_mc }}
+                  </span>
+                </div>
+              </div>
+              
+              <!-- 详细信息 -->
+              <div v-if="caseItem.c_gkws_dsr" class="text-xs">
+                <div class="flex items-start">
+                  <span class="text-gray-500 flex-shrink-0 mr-2">详细信息：</span>
+                  <span class="text-gray-800 break-all leading-relaxed">{{ caseItem.c_gkws_dsr }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- 其他分布信息 - 标签式展示 -->
         <div class="space-y-3">
           <h5 class="text-sm font-medium text-gray-800 flex items-center">
